@@ -3,12 +3,14 @@
 import React from 'react';
 import fetch from 'isomorphic-unfetch';
 import moment from 'moment';
+import Router from 'next/router';
 
 import getWeatherData from '../utils/weatherApi';
 import getWeatherIconClass from '../utils/weatherIconClassMap';
 import WeatherItem from '../components/WeatherItem';
 import Searchbox from '../components/Searchbox';
 import Selectbox from '../components/Selectbox';
+import RefreshSvgIcon from '../components/RefreshSvgIcon';
 import type { Location, WeatherDataItem } from '../utils/flowTypes';
 
 type Props = {
@@ -16,45 +18,67 @@ type Props = {
     location: Location,
     item: WeatherDataItem,
   },
+  hasError: boolean,
 };
 
 type State = {
   selectedWeatherItemIndex: number,
-  weatherDataItem: WeatherDataItem,
-  weatherDataLocation: Location,
+  weatherData: {
+    location: Location,
+    item: WeatherDataItem,
+  },
+  hasError: boolean,
 };
 
 class Index extends React.Component<Props, State> {
-  static async getInitialProps() {
-    const weatherDataResponse = await fetch(getWeatherData());
-    const weatherDataJsonResponse = await weatherDataResponse.json();
-
-    return {
-      weatherData: weatherDataJsonResponse.query.count
-        ? weatherDataJsonResponse.query.results.channel
-        : undefined,
-    };
+  static async getInitialProps(context: { query: Object }) {
+    try {
+      const { location = 'tokyo' } = context.query;
+      const weatherDataResponse = await fetch(getWeatherData(location));
+      const weatherDataJsonResponse = await weatherDataResponse.json();
+      const resultCount = weatherDataJsonResponse.query.count;
+      return {
+        weatherData: resultCount ? weatherDataJsonResponse.query.results.channel : undefined,
+        hasError: !resultCount,
+      };
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      return {
+        hasError: true,
+      };
+    }
   }
   constructor(props: Props) {
     super(props);
     this.state = {
-      weatherDataItem: props.weatherData.item,
-      weatherDataLocation: props.weatherData.location,
+      weatherData: props.weatherData,
       selectedWeatherItemIndex: 0,
+      hasError: props.hasError,
     };
   }
 
   onSearch = async (location: string) => {
-    const weatherDataResponse = await fetch(getWeatherData(location));
-    const weatherDataJsonResponse = await weatherDataResponse.json();
-    this.setState({
-      weatherDataItem: weatherDataJsonResponse.query.count
-        ? weatherDataJsonResponse.query.results.channel.item
-        : undefined,
-      weatherDataLocation: weatherDataJsonResponse.query.count
-        ? weatherDataJsonResponse.query.results.channel.location
-        : undefined,
-    });
+    if (!location) {
+      return;
+    }
+    const href = `/?location=${location}`;
+    const as = href;
+    // Change Url without requesting the page again
+    Router.push(href, as, { shallow: true });
+    try {
+      const weatherDataResponse = await fetch(getWeatherData(location));
+      const weatherDataJsonResponse = await weatherDataResponse.json();
+      const resultCount = weatherDataJsonResponse.query.count;
+      this.setState({
+        weatherData: resultCount ? weatherDataJsonResponse.query.results.channel : undefined,
+        hasError: !resultCount,
+      });
+    } catch (err) {
+      this.setState({
+        hasError: true,
+      });
+    }
   };
 
   render() {
@@ -63,16 +87,24 @@ class Index extends React.Component<Props, State> {
         <header className="header">
           <Searchbox onSearch={this.onSearch} />
           <Selectbox onSelect={this.onSearch} />
+          <RefreshSvgIcon
+            onRefresh={() => {
+              // TODO Paipo: Add interaction for refresh
+              const location = this.state.weatherData.location.city;
+              this.onSearch(location);
+            }}
+          />
         </header>
-        {this.state.weatherDataItem ? (
+        {!this.state.hasError ? (
           <div className="mainWrapper">
             <section className="currentConditionContainer">
-              <h1 className="mainTitle">{this.state.weatherDataLocation.city}</h1>
+              <h1 className="mainTitle">{this.state.weatherData.location.city}</h1>
+
               <p className="subtitle">
-                <span className="country">{this.state.weatherDataLocation.country}</span>
+                <span className="country">{this.state.weatherData.location.country}</span>
                 <span className="date">
                   {moment(
-                    this.state.weatherDataItem.condition.date,
+                    this.state.weatherData.item.condition.date,
                     'ddd, DD MMM YYYY HH:mm A',
                   ).format('MMM DD')}
                 </span>
@@ -80,16 +112,16 @@ class Index extends React.Component<Props, State> {
 
               <article className="weatherCondition">
                 <h2 className="degree">
-                  <span>{this.state.weatherDataItem.condition.temp}&#176;</span>
+                  <span>{this.state.weatherData.item.condition.temp}&#176;</span>
                   <i
-                    className={`wi ${getWeatherIconClass(this.state.weatherDataItem.condition.code)} weatherIcon`}
+                    className={`wi ${getWeatherIconClass(this.state.weatherData.item.condition.code)} weatherIcon`}
                   />
                 </h2>
-                <div>{this.state.weatherDataItem.condition.text}</div>
+                <div>{this.state.weatherData.item.condition.text}</div>
               </article>
             </section>
             <section className="forecastContainer">
-              {this.state.weatherDataItem.forecast.map((weatherItem, index) => (
+              {this.state.weatherData.item.forecast.map((weatherItem, index) => (
                 <div
                   role="button"
                   tabIndex="0"
@@ -102,12 +134,7 @@ class Index extends React.Component<Props, State> {
                   }}
                 >
                   <WeatherItem
-                    key={weatherItem.date}
-                    code={weatherItem.code}
-                    day={weatherItem.day}
-                    date={weatherItem.date}
-                    high={weatherItem.high}
-                    low={weatherItem.low}
+                    {...weatherItem}
                     isSelected={index === this.state.selectedWeatherItemIndex}
                   />
                 </div>
@@ -115,7 +142,7 @@ class Index extends React.Component<Props, State> {
             </section>
           </div>
         ) : (
-          <div>Something Wrong!</div>
+          <div className="errorWrapper">Something Wrong, please try again later!</div>
         )}
         <style jsx>
           {`
@@ -144,6 +171,8 @@ class Index extends React.Component<Props, State> {
               padding: 30px;
               display: flex;
               flex-direction: column;
+              animation-name: lazyload;
+              animation-duration: 1s;
             }
             .weatherCondition {
               display: flex;
@@ -154,7 +183,6 @@ class Index extends React.Component<Props, State> {
             .mainTitle {
               text-align: center;
               font-size: 60px;
-              margin-bottom: 0;
             }
             .subtitle {
               text-align: center;
@@ -166,11 +194,12 @@ class Index extends React.Component<Props, State> {
             }
             .degree {
               font-size: 60px;
-              margin: 0;
+              margin: 0 0 10px 0;
             }
             .weatherIcon {
               vertical-align: middle;
               color: #ffffff;
+              margin-left: 20px;
             }
             .forecastContainer {
               display: flex;
@@ -181,6 +210,27 @@ class Index extends React.Component<Props, State> {
             .weatherItem {
               flex: 1;
               outline: none;
+              animation-name: lazyload;
+              animation-duration: 1s;
+            }
+
+            @keyframes lazyload {
+              from {
+                opacity: 0;
+              }
+              to {
+                opacity: 1;
+              }
+            }
+
+            .errorWrapper {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              margin: auto;
+              color: #ffffff;
+              font-size: 36px;
+              max-width: 900px;
             }
           `}
         </style>

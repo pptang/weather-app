@@ -2,37 +2,37 @@
 
 exports[`Pages With Snapshot Testing snapshot WeatherItem Component 1`] = `
 <article
-  className="jsx-4084992182 weatherItemWrapper "
+  className="jsx-1440265420 weatherItemWrapper "
 >
   <h2
-    className="jsx-4084992182"
+    className="jsx-1440265420"
   >
     Tue
   </h2>
   <p
-    className="jsx-4084992182 date"
+    className="jsx-1440265420 date"
   >
     Mar 18
   </p>
   <figure
-    className="jsx-4084992182"
+    className="jsx-1440265420"
   >
     <i
-      className="jsx-4084992182 wi wi-cloudy"
+      className="jsx-1440265420 wi wi-cloudy"
     />
   </figure>
   <div
-    className="jsx-4084992182"
+    className="jsx-1440265420"
   >
     <span
-      className="jsx-4084992182"
+      className="jsx-1440265420"
     >
       10
       °
     </span>
     ~
     <span
-      className="jsx-4084992182"
+      className="jsx-1440265420"
     >
       15
       °

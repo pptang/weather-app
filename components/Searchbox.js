@@ -50,6 +50,7 @@ class Searchbox extends React.Component<Props, State> {
             .searchboxContainer {
               width: 600px;
               display: flex;
+              margin-left: 15px;
             }
 
             .searchInput {

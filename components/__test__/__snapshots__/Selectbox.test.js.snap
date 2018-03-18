@@ -2,41 +2,41 @@
 
 exports[`Pages With Snapshot Testing snapshot Selectbox Component 1`] = `
 <select
-  className="jsx-4123650447 selectbox"
+  className="jsx-2805902857 selectbox"
   onChange={[Function]}
 >
   <option
-    className="jsx-4123650447"
+    className="jsx-2805902857"
     value="tokyo"
   >
     Tokyo
   </option>
   <option
-    className="jsx-4123650447"
+    className="jsx-2805902857"
     value="new york"
   >
     New York
   </option>
   <option
-    className="jsx-4123650447"
+    className="jsx-2805902857"
     value="taipei"
   >
     Taipei
   </option>
   <option
-    className="jsx-4123650447"
+    className="jsx-2805902857"
     value="sydney"
   >
     Sydney
   </option>
   <option
-    className="jsx-4123650447"
+    className="jsx-2805902857"
     value="seoul"
   >
     Seoul
   </option>
   <option
-    className="jsx-4123650447"
+    className="jsx-2805902857"
     value="shanghai"
   >
     Shanghai

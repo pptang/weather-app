@@ -33,6 +33,7 @@ const WeatherItem = (props: Props) => (
           background-color: #ffffff;
           color: #2e3849;
           cursor: pointer;
+          transition: all 0.5s;
         }
         .weatherItemWrapper:hover {
           color: #4581cf;
