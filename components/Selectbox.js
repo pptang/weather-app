@@ -24,6 +24,7 @@ function Selectbox(props: Props) {
           .selectbox {
             height: 30px;
             margin-left: 10px;
+            margin-right: 15px;
             background-color: #ffffff;
           }
         `}
