@@ -4,7 +4,8 @@ import React from 'react';
 import fetch from 'isomorphic-unfetch';
 
 import getWeatherData from '../utils/weatherApi';
-import getWeatherIcon from '../utils/weatherIconMap';
+import getWeatherIconClass from '../utils/weatherIconClassMap';
+import WeatherItem from '../components/WeatherItem';
 
 type Props = {
   weatherData: {
@@ -28,6 +29,7 @@ type Props = {
 
 type State = {
   location: string,
+  selectedForecastIndex: number,
 };
 
 class Index extends React.Component<Props, State> {
@@ -45,6 +47,7 @@ class Index extends React.Component<Props, State> {
     super(props);
     this.state = {
       location: '',
+      selectedForecastIndex: 0,
     };
   }
   render() {
@@ -58,17 +61,24 @@ class Index extends React.Component<Props, State> {
               <article className="weatherCondition">
                 <h2 className="degree">
                   <span>{this.props.weatherData.condition.temp}&#176;</span>
-                  <img
-                    alt="weather"
-                    src={getWeatherIcon(this.props.weatherData.condition.code)}
-                    className="weatherIcon"
+                  <i
+                    className={`wi ${getWeatherIconClass(this.props.weatherData.condition.code)} weatherIcon`}
                   />
                 </h2>
                 <div>{this.props.weatherData.condition.text}</div>
               </article>
             </section>
             <section className="forecastContainer">
-              <span>Forcast: {this.props.weatherData.forecast.length}</span>
+              {this.props.weatherData.forecast.map((weatherItem, index) => (
+                <WeatherItem
+                  key={weatherItem.date}
+                  code={weatherItem.code}
+                  day={weatherItem.day}
+                  high={weatherItem.high}
+                  low={weatherItem.low}
+                  isSelected={index === this.state.selectedForecastIndex}
+                />
+              ))}
             </section>
           </div>
         ) : (
@@ -106,8 +116,10 @@ class Index extends React.Component<Props, State> {
             }
             .weatherIcon {
               vertical-align: middle;
+              color: #ffffff;
             }
             .forecastContainer {
+              display: flex;
               height: 150px;
               background-color: #fefeff;
             }
