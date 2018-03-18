@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Pages With Snapshot Testing snapshot Searchbox Component 1`] = `
+<div
+  className="jsx-2958326499 searchboxContainer"
+>
+  <input
+    className="jsx-2958326499 searchInput"
+    onChange={[Function]}
+    onKeyPress={[Function]}
+    placeholder="Input your location"
+    type="text"
+    value=""
+  />
+  <button
+    className="jsx-2958326499 searchBtn"
+    onClick={[Function]}
+  >
+    Search
+  </button>
+</div>
+`;

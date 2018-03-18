@@ -1,0 +1,11 @@
+{
+  "parser": "babel-eslint",
+  "extends": ["airbnb"],
+  "rules": {
+    # Let prettier handle parentheses
+    "arrow-parens": 0,
+    "no-undef": 0,
+    # Allow .js & .jsx to be filename extension
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+  }
+}
