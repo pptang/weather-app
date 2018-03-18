@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node server.js",
     "lint": "eslint ./",
-    "flow": "flow",
+    "flow": "flow check",
     "test": "jest"
   },
   "husky": {
