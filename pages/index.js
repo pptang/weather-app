@@ -30,6 +30,23 @@ type Props = {
 type State = {
   location: string,
   selectedForecastIndex: number,
+  weatherData: {
+    title: string,
+    condition: {
+      code: string,
+      date: string,
+      temp: string,
+      text: string,
+    },
+    forecast: Array<{
+      code: string,
+      date: string,
+      day: string,
+      high: string,
+      low: string,
+      text: string,
+    }>,
+  },
 };
 
 class Index extends React.Component<Props, State> {
@@ -47,29 +64,56 @@ class Index extends React.Component<Props, State> {
     super(props);
     this.state = {
       location: '',
+      weatherData: props.weatherData,
       selectedForecastIndex: 0,
     };
   }
+
+  onSearch = async () => {
+    const weatherDataResponse = await fetch(getWeatherData(this.state.location));
+    const weatherDataJsonResponse = await weatherDataResponse.json();
+    this.setState({
+      weatherData: weatherDataJsonResponse.query.count
+        ? weatherDataJsonResponse.query.results.channel.item
+        : undefined,
+    });
+  };
+
   render() {
     return (
       <div className="container">
-        <header className="header">Put searchbox here: {this.state.location}</header>
-        {this.props.weatherData ? (
+        <header className="header">
+          <input
+            className="searchInput"
+            type="text"
+            placeholder="Input your location"
+            value={this.state.location}
+            onChange={event => {
+              this.setState({
+                location: event.target.value,
+              });
+            }}
+          />
+          <button className="searchBtn" onClick={this.onSearch}>
+            Search
+          </button>
+        </header>
+        {this.state.weatherData ? (
           <div className="mainWrapper">
             <section className="currentConditionContainer">
-              <h1 className="mainTitle">{this.props.weatherData.title}</h1>
+              <h1 className="mainTitle">{this.state.weatherData.title}</h1>
               <article className="weatherCondition">
                 <h2 className="degree">
-                  <span>{this.props.weatherData.condition.temp}&#176;</span>
+                  <span>{this.state.weatherData.condition.temp}&#176;</span>
                   <i
-                    className={`wi ${getWeatherIconClass(this.props.weatherData.condition.code)} weatherIcon`}
+                    className={`wi ${getWeatherIconClass(this.state.weatherData.condition.code)} weatherIcon`}
                   />
                 </h2>
-                <div>{this.props.weatherData.condition.text}</div>
+                <div>{this.state.weatherData.condition.text}</div>
               </article>
             </section>
             <section className="forecastContainer">
-              {this.props.weatherData.forecast.map((weatherItem, index) => (
+              {this.state.weatherData.forecast.map((weatherItem, index) => (
                 <WeatherItem
                   key={weatherItem.date}
                   code={weatherItem.code}
@@ -91,7 +135,32 @@ class Index extends React.Component<Props, State> {
             }
             .header {
               height: 50px;
+              width: 100%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
             }
+            .searchInput {
+              background-color: #ffffff;
+              border: 0;
+              border-radius: 5px;
+              flex: 1;
+              height: 30px;
+              max-width: 600px;
+              padding-left: 10px;
+              transition: border 0.3s ease-out;
+            }
+            .searchInput:focus {
+              border: 1px solid #cccccc;
+            }
+            .searchBtn {
+              border: 0;
+              border-radius: 4px;
+              cursor: pointer;
+              margin-left: 10px;
+              height: 30px;
+            }
+
             .mainWrapper {
               display: flex;
               flex-direction: column;
