@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Pages With Snapshot Testing snapshot WeatherItem Component 1`] = `
+<article
+  className="jsx-4284836942 weatherItemWrapper"
+>
+  <h2
+    className="jsx-4284836942"
+  >
+    Tue
+  </h2>
+  <figure
+    className="jsx-4284836942"
+  >
+    <i
+      className="jsx-4284836942 wi wi-cloudy"
+    />
+  </figure>
+  <div
+    className="jsx-4284836942"
+  >
+    <span
+      className="jsx-4284836942"
+    >
+      10
+      °
+    </span>
+    ~
+    <span
+      className="jsx-4284836942"
+    >
+      15
+      °
+    </span>
+  </div>
+</article>
+`;
