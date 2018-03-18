@@ -9,6 +9,11 @@
     "flow": "flow",
     "test": "jest"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm run flow"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pptang/weather-app.git"
@@ -34,6 +39,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
     "flow-bin": "^0.68.0",
+    "husky": "^0.15.0-rc.9",
     "jest": "^22.4.2",
     "react-test-renderer": "^16.2.0"
   }
