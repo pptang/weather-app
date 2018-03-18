@@ -4,7 +4,7 @@ import React from 'react';
 import fetch from 'isomorphic-unfetch';
 
 import getWeatherData from '../utils/weatherApi';
-import getWeatherIcon from '../utils/weatherIconMap';
+import getWeatherIconClass from '../utils/weatherIconClassMap';
 
 type Props = {
   weatherData: {
@@ -58,10 +58,8 @@ class Index extends React.Component<Props, State> {
               <article className="weatherCondition">
                 <h2 className="degree">
                   <span>{this.props.weatherData.condition.temp}&#176;</span>
-                  <img
-                    alt="weather"
-                    src={getWeatherIcon(this.props.weatherData.condition.code)}
-                    className="weatherIcon"
+                  <i
+                    className={`wi ${getWeatherIconClass(this.props.weatherData.condition.code)} weatherIcon`}
                   />
                 </h2>
                 <div>{this.props.weatherData.condition.text}</div>
@@ -106,6 +104,7 @@ class Index extends React.Component<Props, State> {
             }
             .weatherIcon {
               vertical-align: middle;
+              color: #ffffff;
             }
             .forecastContainer {
               height: 150px;
