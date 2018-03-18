@@ -6,47 +6,21 @@ import fetch from 'isomorphic-unfetch';
 import getWeatherData from '../utils/weatherApi';
 import getWeatherIconClass from '../utils/weatherIconClassMap';
 import WeatherItem from '../components/WeatherItem';
+import Searchbox from '../components/Searchbox';
+import Selectbox from '../components/Selectbox';
+import type { Location, WeatherDataItem } from '../utils/flowTypes';
 
 type Props = {
   weatherData: {
-    title: string,
-    condition: {
-      code: string,
-      date: string,
-      temp: string,
-      text: string,
-    },
-    forecast: Array<{
-      code: string,
-      date: string,
-      day: string,
-      high: string,
-      low: string,
-      text: string,
-    }>,
+    location: Location,
+    item: WeatherDataItem,
   },
 };
 
 type State = {
-  location: string,
-  selectedForecastIndex: number,
-  weatherData: {
-    title: string,
-    condition: {
-      code: string,
-      date: string,
-      temp: string,
-      text: string,
-    },
-    forecast: Array<{
-      code: string,
-      date: string,
-      day: string,
-      high: string,
-      low: string,
-      text: string,
-    }>,
-  },
+  selectedWeatherItemIndex: number,
+  weatherDataItem: WeatherDataItem,
+  weatherDataLocation: Location,
 };
 
 class Index extends React.Component<Props, State> {
@@ -56,25 +30,28 @@ class Index extends React.Component<Props, State> {
 
     return {
       weatherData: weatherDataJsonResponse.query.count
-        ? weatherDataJsonResponse.query.results.channel.item
+        ? weatherDataJsonResponse.query.results.channel
         : undefined,
     };
   }
   constructor(props: Props) {
     super(props);
     this.state = {
-      location: '',
-      weatherData: props.weatherData,
-      selectedForecastIndex: 0,
+      weatherDataItem: props.weatherData.item,
+      weatherDataLocation: props.weatherData.location,
+      selectedWeatherItemIndex: 0,
     };
   }
 
-  onSearch = async () => {
-    const weatherDataResponse = await fetch(getWeatherData(this.state.location));
+  onSearch = async (location: string) => {
+    const weatherDataResponse = await fetch(getWeatherData(location));
     const weatherDataJsonResponse = await weatherDataResponse.json();
     this.setState({
-      weatherData: weatherDataJsonResponse.query.count
+      weatherDataItem: weatherDataJsonResponse.query.count
         ? weatherDataJsonResponse.query.results.channel.item
+        : undefined,
+      weatherDataLocation: weatherDataJsonResponse.query.count
+        ? weatherDataJsonResponse.query.results.channel.location
         : undefined,
     });
   };
@@ -83,45 +60,46 @@ class Index extends React.Component<Props, State> {
     return (
       <div className="container">
         <header className="header">
-          <input
-            className="searchInput"
-            type="text"
-            placeholder="Input your location"
-            value={this.state.location}
-            onChange={event => {
-              this.setState({
-                location: event.target.value,
-              });
-            }}
-          />
-          <button className="searchBtn" onClick={this.onSearch}>
-            Search
-          </button>
+          <Searchbox onSearch={this.onSearch} />
+          <Selectbox onSelect={this.onSearch} />
         </header>
-        {this.state.weatherData ? (
+        {this.state.weatherDataItem ? (
           <div className="mainWrapper">
             <section className="currentConditionContainer">
-              <h1 className="mainTitle">{this.state.weatherData.title}</h1>
+              <h1 className="mainTitle">{this.state.weatherDataLocation.city}</h1>
+              <h3 className="subtitle">{this.state.weatherDataLocation.country}</h3>
               <article className="weatherCondition">
                 <h2 className="degree">
-                  <span>{this.state.weatherData.condition.temp}&#176;</span>
+                  <span>{this.state.weatherDataItem.condition.temp}&#176;</span>
                   <i
-                    className={`wi ${getWeatherIconClass(this.state.weatherData.condition.code)} weatherIcon`}
+                    className={`wi ${getWeatherIconClass(this.state.weatherDataItem.condition.code)} weatherIcon`}
                   />
                 </h2>
-                <div>{this.state.weatherData.condition.text}</div>
+                <div>{this.state.weatherDataItem.condition.text}</div>
               </article>
             </section>
             <section className="forecastContainer">
-              {this.state.weatherData.forecast.map((weatherItem, index) => (
-                <WeatherItem
-                  key={weatherItem.date}
-                  code={weatherItem.code}
-                  day={weatherItem.day}
-                  high={weatherItem.high}
-                  low={weatherItem.low}
-                  isSelected={index === this.state.selectedForecastIndex}
-                />
+              {this.state.weatherDataItem.forecast.map((weatherItem, index) => (
+                <div
+                  role="button"
+                  tabIndex="0"
+                  className="weatherItem"
+                  onClick={() => this.setState({ selectedWeatherItemIndex: index })}
+                  onKeyPress={evt => {
+                    if (evt && evt.key === 'Enter') {
+                      this.setState({ selectedWeatherItemIndex: index });
+                    }
+                  }}
+                >
+                  <WeatherItem
+                    key={weatherItem.date}
+                    code={weatherItem.code}
+                    day={weatherItem.day}
+                    high={weatherItem.high}
+                    low={weatherItem.low}
+                    isSelected={index === this.state.selectedWeatherItemIndex}
+                  />
+                </div>
               ))}
             </section>
           </div>
@@ -132,6 +110,10 @@ class Index extends React.Component<Props, State> {
           {`
             .container {
               background-color: #39b5fc;
+              width: 100%;
+              height: 100vh;
+              display: flex;
+              flex-direction: column;
             }
             .header {
               height: 50px;
@@ -140,47 +122,35 @@ class Index extends React.Component<Props, State> {
               justify-content: center;
               align-items: center;
             }
-            .searchInput {
-              background-color: #ffffff;
-              border: 0;
-              border-radius: 5px;
-              flex: 1;
-              height: 30px;
-              max-width: 600px;
-              padding-left: 10px;
-              transition: border 0.3s ease-out;
-            }
-            .searchInput:focus {
-              border: 1px solid #cccccc;
-            }
-            .searchBtn {
-              border: 0;
-              border-radius: 4px;
-              cursor: pointer;
-              margin-left: 10px;
-              height: 30px;
-            }
-
             .mainWrapper {
               display: flex;
               flex-direction: column;
-              width: 100%;
-              height: 100vh;
+              flex: 1;
             }
             .currentConditionContainer {
               flex: 1;
               color: #ffffff;
               padding: 30px;
+              display: flex;
+              flex-direction: column;
             }
             .weatherCondition {
-              margin-left: 30px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              margin: auto;
             }
             .mainTitle {
               text-align: center;
-              font-size: 24px;
+              font-size: 60px;
+              margin-bottom: 0;
+            }
+            .subtitle {
+              text-align: center;
+              font-weight: 400;
             }
             .degree {
-              font-size: 48px;
+              font-size: 60px;
               margin: 0;
             }
             .weatherIcon {
@@ -189,8 +159,13 @@ class Index extends React.Component<Props, State> {
             }
             .forecastContainer {
               display: flex;
-              height: 150px;
+              height: 200px;
               background-color: #fefeff;
+              overflow-x: scroll;
+            }
+            .weatherItem {
+              flex: 1;
+              outline: none;
             }
           `}
         </style>

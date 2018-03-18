@@ -23,7 +23,6 @@ const WeatherItem = (props: Props) => (
     <style jsx>
       {`
         .weatherItemWrapper {
-          flex: 1;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -39,6 +38,7 @@ const WeatherItem = (props: Props) => (
         .isSelected {
           color: #4581cf;
           font-size: 17px;
+          box-shadow: inset 0px 0px 14px 0px rgba(133, 184, 255, 0.75);
         }
       `}
     </style>
