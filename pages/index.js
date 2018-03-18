@@ -5,6 +5,7 @@ import fetch from 'isomorphic-unfetch';
 
 import getWeatherData from '../utils/weatherApi';
 import getWeatherIconClass from '../utils/weatherIconClassMap';
+import WeatherItem from '../components/WeatherItem';
 
 type Props = {
   weatherData: {
@@ -28,6 +29,7 @@ type Props = {
 
 type State = {
   location: string,
+  selectedForecastIndex: number,
 };
 
 class Index extends React.Component<Props, State> {
@@ -45,6 +47,7 @@ class Index extends React.Component<Props, State> {
     super(props);
     this.state = {
       location: '',
+      selectedForecastIndex: 0,
     };
   }
   render() {
@@ -66,7 +69,16 @@ class Index extends React.Component<Props, State> {
               </article>
             </section>
             <section className="forecastContainer">
-              <span>Forcast: {this.props.weatherData.forecast.length}</span>
+              {this.props.weatherData.forecast.map((weatherItem, index) => (
+                <WeatherItem
+                  key={weatherItem.date}
+                  code={weatherItem.code}
+                  day={weatherItem.day}
+                  high={weatherItem.high}
+                  low={weatherItem.low}
+                  isSelected={index === this.state.selectedForecastIndex}
+                />
+              ))}
             </section>
           </div>
         ) : (
@@ -107,6 +119,7 @@ class Index extends React.Component<Props, State> {
               color: #ffffff;
             }
             .forecastContainer {
+              display: flex;
               height: 150px;
               background-color: #fefeff;
             }
