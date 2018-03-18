@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node server.js",
     "lint": "eslint ./",
-    "flow": "flow"
+    "flow": "flow",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,8 @@
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
-    "flow-bin": "^0.68.0"
+    "flow-bin": "^0.68.0",
+    "jest": "^22.4.2",
+    "react-test-renderer": "^16.2.0"
   }
 }
