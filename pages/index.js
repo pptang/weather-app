@@ -2,6 +2,7 @@
 
 import React from 'react';
 import fetch from 'isomorphic-unfetch';
+import moment from 'moment';
 
 import getWeatherData from '../utils/weatherApi';
 import getWeatherIconClass from '../utils/weatherIconClassMap';
@@ -67,7 +68,16 @@ class Index extends React.Component<Props, State> {
           <div className="mainWrapper">
             <section className="currentConditionContainer">
               <h1 className="mainTitle">{this.state.weatherDataLocation.city}</h1>
-              <h3 className="subtitle">{this.state.weatherDataLocation.country}</h3>
+              <p className="subtitle">
+                <span className="country">{this.state.weatherDataLocation.country}</span>
+                <span className="date">
+                  {moment(
+                    this.state.weatherDataItem.condition.date,
+                    'ddd, DD MMM YYYY HH:mm A',
+                  ).format('MMM DD')}
+                </span>
+              </p>
+
               <article className="weatherCondition">
                 <h2 className="degree">
                   <span>{this.state.weatherDataItem.condition.temp}&#176;</span>
@@ -95,6 +105,7 @@ class Index extends React.Component<Props, State> {
                     key={weatherItem.date}
                     code={weatherItem.code}
                     day={weatherItem.day}
+                    date={weatherItem.date}
                     high={weatherItem.high}
                     low={weatherItem.low}
                     isSelected={index === this.state.selectedWeatherItemIndex}
@@ -148,6 +159,10 @@ class Index extends React.Component<Props, State> {
             .subtitle {
               text-align: center;
               font-weight: 400;
+              font-style: italic;
+            }
+            .country {
+              margin-right: 20px;
             }
             .degree {
               font-size: 60px;
