@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Pages With Snapshot Testing snapshot Selectbox Component 1`] = `
+<select
+  className="jsx-4123650447 selectbox"
+  onChange={[Function]}
+>
+  <option
+    className="jsx-4123650447"
+    value="tokyo"
+  >
+    Tokyo
+  </option>
+  <option
+    className="jsx-4123650447"
+    value="new york"
+  >
+    New York
+  </option>
+  <option
+    className="jsx-4123650447"
+    value="taipei"
+  >
+    Taipei
+  </option>
+  <option
+    className="jsx-4123650447"
+    value="sydney"
+  >
+    Sydney
+  </option>
+  <option
+    className="jsx-4123650447"
+    value="seoul"
+  >
+    Seoul
+  </option>
+  <option
+    className="jsx-4123650447"
+    value="shanghai"
+  >
+    Shanghai
+  </option>
+</select>
+`;
