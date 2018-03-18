@@ -4,3 +4,6 @@ node_modules
 # build output
 .next
 dist
+
+# log
+npm-debug.log
